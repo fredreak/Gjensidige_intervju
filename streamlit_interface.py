@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#streamlit run C:\Users\fredr\Python_koding\Gjensidig_intervju\streamlit_interface.py
+#streamlit run C:\Users\fredr\Python_koding\Gjensidig_intervju\Gjensidige_intervju\streamlit_interface.py
 
 
 import streamlit as st
@@ -17,7 +17,7 @@ st.write("This is an example code of how you can use streamlit to help analyze y
 st.latex(r"\dot{x} = \sigma \cdot (y - x)")
 st.latex(r"\dot{y} = x \cdot (\rho - z) - y")
 st.latex(r"\dot{z} = xy - \beta z")
-
+"test"
 #SYSTEM PARAMETERS (FIXED)
 x_0, y_0, z_0 = [0.001]*3 #Set Initial values
 delta, TOL = 1e-3, 1e-4  #Set partition delta and quadrature error tolerance TOL
@@ -38,11 +38,12 @@ vertical_axis = st.selectbox("Select vertical axis", ["z","x", "y", "T"])
 #CALCULATE AND FORMATE DATA
 @st.cache
 def calculate():
-    return lz.run_lorenz(x_0, y_0, z_0, t_limit, delta, sigma, rho, beta, TOL)
-x,y,z,T = calculate()
+    x,y,z,T = lz.run_lorenz(x_0, y_0, z_0, t_limit, delta, sigma, rho, beta, TOL)
+    data = np.transpose(np.array([x,y,z,T]))
+    return pd.DataFrame(data, columns = ["x","y","z","T"])
+results = calculate()
 
-data = np.transpose(np.array([x,y,z,T]))
-results = pd.DataFrame(data, columns = ["x","y","z","T"])
+
 
 #GENERATE AND UPLOAD CHARTS 
 chart = alt.Chart(results.head(t_final_shown*int(1/delta))).mark_line().encode(
