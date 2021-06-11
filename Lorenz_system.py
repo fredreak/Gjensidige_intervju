@@ -8,6 +8,7 @@ import numpy as np
 import num_int_adaptive as nia
 from random import random
 from scipy.stats import linregress
+from scipy.integrate import quad
 
 
 
@@ -21,9 +22,12 @@ def z_deriv(z, x, y, beta):
     return (x*y-beta*z)
 
 def update_values(x, y, z, sigma, rho, beta, delta, TOL):
-    x_new = x + nia.adap_q(x, x+delta, x_deriv, nia.simpsons, TOL, y, z, sigma)
-    y_new = y + nia.adap_q(y, y+delta, y_deriv, nia.simpsons, TOL, z, x, rho)
-    z_new = z + nia.adap_q(z, z+delta, z_deriv, nia.simpsons, TOL, x, y, beta)   
+#    x_new = x + nia.adap_q(x, x+delta, x_deriv, nia.simpsons, TOL, y, z, sigma)
+#    y_new = y + nia.adap_q(y, y+delta, y_deriv, nia.simpsons, TOL, z, x, rho)
+#    z_new = z + nia.adap_q(z, z+delta, z_deriv, nia.simpsons, TOL, x, y, beta)   
+    x_new = x + quad(x_deriv, x, x+delta, (y,z,sigma), epsrel = 1e-3)[0]
+    y_new = y + quad(y_deriv, y, y+delta, (z,x,rho), epsrel = 1e-3)[0]
+    z_new = z + quad(z_deriv, z, z+delta, (x, y, beta), epsrel = 1e-3)[0]
     return x_new, y_new, z_new
 
 
